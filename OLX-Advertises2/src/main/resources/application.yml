@@ -51,6 +51,13 @@ resilience4j:
         failureRateThreshold: 50
         minimumNumberOfCalls: 5
         permittedNumberOfCallsInHalfOpenState: 3
+        waitDurationInOpenState: 10s 
+      ADVERTISE-CIRCUIT-BREAKER:
+        registerHealthIndicator: true
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
         waitDurationInOpenState: 10s       
 
 

@@ -17,11 +17,10 @@ public class CustomInfoContributor implements InfoContributor {
 
 	@Override
 	public void contribute(Builder builder) {
-		// { "total-registered-users": 478, "active-login-count": 35 }
-		//long usersCount=userRepository.count();
+	
 		Map<String, Object> userDetails = new HashMap<>();
-		userDetails.put("total-registered-users", 40);
-		userDetails.put("active-login-count", 35);
+		userDetails.put("total-registered-users", userRepository.count());
+		userDetails.put("active-login-count", 350);
 		builder.withDetails(userDetails);
 	}
 
