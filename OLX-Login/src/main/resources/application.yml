@@ -1,55 +1,17 @@
 server:
   port: 9000
-
-#management:
-#  endpoints:
-#    web:
-#     exposure:
-#        include: '*'
-#        base-path: /olx-login
-#  endpoint:
-#    shutdown:
-#      enabled: true
-#      
 spring:
-
-   cloud:
-     discovery:
-      enabled: true
-   application:
-       #name: login-service
+  application:
        name: LOGIN-SERVICE
-   datasource:
-      url: jdbc:mysql://localhost:3306/olx-security
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      username: root
-      password: Saketh1@
-   jpa:
-      hibernate.ddl-auto: update
-      properties:
-         hibernate:
-            dialect: org.hibernate.dialect.MySQL8Dialect
-            
-#   config:
-#      import: configserver:http://localhost:8888
-            
-   zipkin:
-     base-url:  http://localhost:9411
-
-
-
-            
- 
-            
+  config:
+      import: configserver:http://localhost:8888
+  zipkin:
+     base-url:  http://localhost:9411            
 eureka:
-  client:
+   client:
       register-with-eureka: true
       fetch-registry: true
-  instance:
-      hostname: localhost
-#  instance:
-#      #prefer-ip-address: true
-#      hostname: localhost
-#      instance-id: ${spring.application.name}:{random.uuid}
+   instance:
+      prefer-ip-address: true
       
      

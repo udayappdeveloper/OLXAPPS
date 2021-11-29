@@ -3,14 +3,21 @@ package com.olx.dto;
 import java.sql.Blob;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-@JsonInclude(Include.NON_EMPTY)
-public class AdvertisesDto {
-	private int id;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
+@JsonInclude(Include.NON_EMPTY)
+@ApiModel("AdvertisesDto")
+public class AdvertisesDto {
+	@ApiModelProperty("Id")
+	private int id;
+	@ApiModelProperty("Title of the Advertisement")
 	private String title;
+	@ApiModelProperty("Category name of the Advertisement")
 	private String category;
 
 	public String getCategory() {
@@ -31,6 +38,7 @@ public class AdvertisesDto {
 
 	private String status;
 
+	@JsonIgnore
 	public int getCategoryId() {
 		return categoryId;
 	}
@@ -39,6 +47,7 @@ public class AdvertisesDto {
 		this.categoryId = categoryId;
 	}
 
+	@JsonIgnore
 	public int getStatusId() {
 		return statusId;
 	}
@@ -47,22 +56,27 @@ public class AdvertisesDto {
 		this.statusId = statusId;
 
 	}
-
+	@ApiModelProperty("Category ID of the Advertisement")
 	private int categoryId;
+	@ApiModelProperty("Status Advertisement")
 	private int statusId;
 
+	@ApiModelProperty("Price of the Item")
 	private double price;
-
+	@ApiModelProperty("Descirption")
 	private String description;
 
 	private Blob photo;
 
+	@ApiModelProperty("Created Date")
 	private LocalDate created_date;
-
+	
+	@ApiModelProperty("Modified Date")
 	private LocalDate modified_date;
 	private int active;
 
 	private String posted_by;
+	@ApiModelProperty("Username")
 	private String username;
 
 	public int getActive() {
