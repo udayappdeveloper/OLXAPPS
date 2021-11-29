@@ -1,6 +1,6 @@
 package com.olx.service;
 
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 import com.olx.dto.AdvertisesDto;
@@ -19,9 +19,13 @@ public interface OlxAdvertisementService {
 
 	public AdvertisesDto returnAdvertiseDetails(String authToken,int id);
 
-	public List<AdvertisesDto> searchAdvertisementsBasedUpOnGivenFilterCriteria(String searchText, int categoryId,
-			int userId, String dateCondition, LocalDate onDate, LocalDate fromDate, LocalDate toDate, String sortBy,
-			int sortIndex, int numOfRecords);
+	public List<AdvertisesDto> searchAdvertisementsBasedUpOnGivenFilterCriteria(String searchText, Integer categoryId,
+			String postedBy, String dateCondition, Date onDate,Date fromDate, Date toDate, String sortBy,
+			Integer sortIndex, Integer numOfRecords);
+	
+	
+
+
 
 	public List<AdvertisesDto> searchAdvertisementsUsingTheProvidedSearchTextWithinAllFieldsOfAnAdvertise(
 			String searchText);

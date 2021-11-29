@@ -1,11 +1,9 @@
 package com.olx.controller;
 
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -114,18 +112,18 @@ public class AdvertizeController {
 	@ApiOperation(value = "Search Filter Service Ads")
 	public List<AdvertisesDto> searchAdvertisementsBasedUpOnGivenFilterCriteria(
 			@RequestParam(name = "searchText", required = false) String searchText,
-			@RequestParam(name = "category", required = false) int categoryId,
-			@RequestParam(name = "postedBy", required = false) int userId,
+			@RequestParam(name = "categoryId", required = false) Integer categoryId,
+			@RequestParam(name = "postedBy", required = false) String postedBy,
 			@RequestParam(name = "dateCondition", required = false) String dateCondition,
-			@RequestParam(name = "onDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate onDate,
-			@RequestParam(name = "fromDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
-			@RequestParam(name = "toDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+			@RequestParam(name = "onDate", required = false)  Date onDate,
+			@RequestParam(name = "fromDate", required = false)  Date fromDate,
+			@RequestParam(name = "toDate", required = false)  Date toDate,
 			@RequestParam(name = "sortBy", required = false) String sortBy,
-			@RequestParam(name = "sortIndex", required = false) int sortIndex,
-			@RequestParam(name = "records", required = false) int numOfRecords) {
+			@RequestParam(name = "startIndex", required = false) Integer startIndex,
+			@RequestParam(name = "records", required = false) Integer numOfRecords) {
 
-		return service.searchAdvertisementsBasedUpOnGivenFilterCriteria(searchText, categoryId, userId, dateCondition,
-				onDate, fromDate, toDate, sortBy, sortIndex, numOfRecords);
+		return service.searchAdvertisementsBasedUpOnGivenFilterCriteria(searchText, categoryId, postedBy, dateCondition,
+				onDate, fromDate, toDate, sortBy, startIndex, numOfRecords);
 
 	}
 
