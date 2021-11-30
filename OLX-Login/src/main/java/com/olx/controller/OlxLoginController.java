@@ -1,6 +1,7 @@
 package com.olx.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/olx/login")
 public class OlxLoginController {
 	@Autowired
+	@Qualifier(value="olxlogin1")
 	OlxLoginService loginService;
 	
 	
@@ -53,11 +55,10 @@ public class OlxLoginController {
 		return loginService.getUserName(authToken);
 	}
 
-	@DeleteMapping(value = "/user/logout", consumes = { MediaType.APPLICATION_JSON_VALUE,
-			MediaType.APPLICATION_XML_VALUE })
+	@DeleteMapping(value = "/user/logout")
 
 	@ApiOperation(value = "To Logout  a User")
-	public boolean logoutUser(@RequestHeader("auth-token") String authToken) {
+	public boolean logoutUser(@RequestHeader("Authorization") String authToken) {
 		return loginService.logoutUser(authToken);
 	}
 

@@ -273,16 +273,16 @@ public class OlxAdvertismentServiceImpl implements OlxAdvertisementService {
 		criteriaQuery.where(predicateList.toArray(arr));
 
 		// Pageable page = PageRequest.of(startIndex, numOfRecords);
-
-		TypedQuery<AdvertisesEntity> query = entityManager.createQuery(criteriaQuery);
-
+		
 		if (sortBy != null && sortBy.equalsIgnoreCase("ASC")) {
 			criteriaQuery.orderBy(criteriaBuilder.asc(rootEntity.get("created_date")));
 		}
 		if (sortBy != null && sortBy.equalsIgnoreCase("DESC")) {
 			criteriaQuery.orderBy(criteriaBuilder.desc(rootEntity.get("created_date")));
 		}
+		
 
+		TypedQuery<AdvertisesEntity> query = entityManager.createQuery(criteriaQuery);
 		query.setFirstResult(startIndex * numOfRecords);
 		query.setMaxResults(5);
 
@@ -302,12 +302,12 @@ public class OlxAdvertismentServiceImpl implements OlxAdvertisementService {
 		Predicate titlePredicate = criteriaBuilder.like(rootEntity.get("title"), "%" + searchText + "%");
 		Predicate descriptionPredicate = criteriaBuilder.like(rootEntity.get("description"), "%" + searchText + "%");
 
-		Predicate postedPredicate = criteriaBuilder.equal(rootEntity.get("posted_by"), searchText); // title=searchText
+		Predicate postedPredicate = criteriaBuilder.equal(rootEntity.get("posted_by"), "%" + searchText + "%"); // title=searchText
 		Predicate userNamePredicate = criteriaBuilder.like(rootEntity.get("username"), "%" + searchText + "%");
-		Predicate categoryPredicate = criteriaBuilder.equal(rootEntity.get("category"), searchText);
+		//Predicate categoryPredicate = criteriaBuilder.equal(rootEntity.get("category"), searchText);
 
 		Predicate postedByPredicate = criteriaBuilder.equal(rootEntity.get("posted_by"), searchText);
-		Predicate predicateAnd1 = criteriaBuilder.or(titlePredicate, categoryPredicate, postedPredicate,
+		Predicate predicateAnd1 = criteriaBuilder.or(titlePredicate,  postedPredicate,
 				postedByPredicate, userNamePredicate, descriptionPredicate);
 		predicateList.add(predicateAnd1);
 		Predicate finalPredicate = criteriaBuilder.or(titlePredicate, postedPredicate, userNamePredicate,

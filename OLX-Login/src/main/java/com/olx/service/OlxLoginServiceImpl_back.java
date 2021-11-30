@@ -2,6 +2,7 @@ package com.olx.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +20,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.olx.dto.UserDto;
+import com.olx.entity.AuthTokenDocument;
 import com.olx.entity.UserEntity;
+import com.olx.exception.InvalidAuthenticationToken;
+import com.olx.repository.AuthTokenRepository;
 import com.olx.repository.UserRepository;
 import com.olx.security.JwtUtil;
 
-@Service(value ="olxlogin1")
-public class OlxLoginServiceImpl implements OlxLoginService {
+//@Service(value ="olxlogin2")
+public class OlxLoginServiceImpl_back implements OlxLoginService {
 	@Autowired
 	UserRepository userRepository;
 
@@ -36,6 +40,8 @@ public class OlxLoginServiceImpl implements OlxLoginService {
 	AuthenticationManager authenticationManager;
 	@Autowired
 	JwtUtil jwtUtil;
+	@Autowired
+	AuthTokenRepository authTokenRepository;
 
 	@Override
 	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
@@ -87,8 +93,24 @@ public class OlxLoginServiceImpl implements OlxLoginService {
 					passwordEncoder.encode(userEntity.getPassword()), authorities);
 			isValidtoken = jwtUtil.validateToken(jwtToken, userDetails);
 			if (isValidtoken) {
-				userEntity.setActive(false);
-				userRepository.save(userEntity);
+
+				Optional<AuthTokenDocument> authTokenDocument = authTokenRepository.findByauthToken(jwtToken);
+				if (authTokenDocument.isPresent()) {
+
+					// authTokenRepository.save(authTokenDocument);// mongo save
+					// userEntity.setActive(false);
+					// userRepository.save(userEntity);
+
+					throw new InvalidAuthenticationToken("Alredy logged out");
+
+				} else {
+
+					AuthTokenDocument doc = new AuthTokenDocument();
+					doc.setAuthToken(jwtToken);
+					authTokenRepository.save(doc);
+					userEntity.setActive(false);
+					userRepository.save(userEntity);
+				}
 
 			} else {
 				throw new UsernameNotFoundException(userName);
@@ -108,7 +130,7 @@ public class OlxLoginServiceImpl implements OlxLoginService {
 		userRequest.setId(entity.getId());
 		userRequest.setPassword("");
 		userRequest.setRoles("");
-		//userRequest.setActive(false);
+		// userRequest.setActive(false);
 
 		return userRequest;
 	}
@@ -147,11 +169,27 @@ public class OlxLoginServiceImpl implements OlxLoginService {
 
 	@Override
 	public ResponseEntity<Boolean> validateToken(String authToken) {
-		boolean isValidtoken;
+		boolean isValidtoken = false;
 		try {
+
 			String jwtToken = authToken.substring(7, authToken.length());
-			UserDetails userDetails = loadUserByUsername(jwtUtil.extractUsername(jwtToken));
-			isValidtoken = jwtUtil.validateToken(jwtToken, userDetails);
+			Optional<AuthTokenDocument> authTokenDocument = authTokenRepository.findByauthToken(jwtToken);
+			if (authTokenDocument.isPresent()) {
+				
+				AuthTokenDocument doc=authTokenDocument.get();
+
+				if (doc.getAuthToken().equals(jwtToken)) {
+					isValidtoken = false;
+					throw new InvalidAuthenticationToken();
+
+				}
+			} else {
+
+				UserDetails userDetails = loadUserByUsername(jwtUtil.extractUsername(jwtToken));
+				isValidtoken = jwtUtil.validateToken(jwtToken, userDetails);
+
+			}
+
 		} catch (Exception e) {
 			return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
