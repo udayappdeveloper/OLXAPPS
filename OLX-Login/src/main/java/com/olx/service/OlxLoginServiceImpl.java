@@ -23,7 +23,7 @@ import com.olx.entity.UserEntity;
 import com.olx.repository.UserRepository;
 import com.olx.security.JwtUtil;
 
-@Service(value ="olxlogin1")
+/*@Service(value ="olxlogin1")*/
 public class OlxLoginServiceImpl implements OlxLoginService {
 	@Autowired
 	UserRepository userRepository;
