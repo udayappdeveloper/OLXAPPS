@@ -108,7 +108,7 @@ public class OlxLoginServiceImpl implements OlxLoginService {
 		userRequest.setId(entity.getId());
 		userRequest.setPassword("");
 		userRequest.setRoles("");
-		userRequest.setActive(false);
+		//userRequest.setActive(false);
 
 		return userRequest;
 	}

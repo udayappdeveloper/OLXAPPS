@@ -34,9 +34,9 @@ public class OlxAdvertisesApplication {
 
 	private ApiInfo getApiInfo() {
 
-		return new ApiInfo("Stock REST API Documentation", "Stock REST API Released By Zensar Ltd", "2.5",
+		return new ApiInfo("Advertisement REST API Documentation", "Advertisement REST API Released By Zensar Ltd", "2.5",
 				"https:zensar.com/termsofservice",
-				new Contact("UdayKumar Kalluri", "http://udaykumar.com,com", "udaykumar.kalluri@zensar.com"), "GPL",
+				new Contact("UdayKumar Kalluri", "http://zensar.com,com", "udaykumar.kalluri@zensar.com"), "GPL",
 				"http://gpl.com", new ArrayList<VendorExtension>());
 
 	}

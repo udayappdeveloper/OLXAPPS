@@ -216,68 +216,6 @@ public class OlxAdvertismentServiceImpl implements OlxAdvertisementService {
 	public List<AdvertisesDto> searchAdvertisementsBasedUpOnGivenFilterCriteria(String searchText, Integer categoryId,
 			String postedBy, String dateCondition, Date onDate, Date fromDate, Date toDate, String sortBy,
 			Integer startIndex, Integer numOfRecords) {
-		// Pageable pageable=new Pa
-
-		/*
-		 * List<AdvertisesEntity> list=adRespository.findAll(new
-		 * Specification<AdvertisesEntity>() {
-		 * 
-		 * @Override public Predicate toPredicate(Root<AdvertisesEntity> root,
-		 * CriteriaQuery<?> cq, CriteriaBuilder cb) { Predicate p = cb.conjunction();
-		 * 
-		 * // it is for fromDate and ToDate if (Objects.nonNull(fromDate) &&
-		 * Objects.nonNull(toDate) && fromDate.isBefore(toDate) &&
-		 * dateCondition.equalsIgnoreCase("between")) { p = cb.and(p,
-		 * cb.between(root.get("created_date"), fromDate, toDate)); }
-		 * 
-		 * // datcondition=equals&onDate=2021-10-17 if (Objects.nonNull(onDate) &&
-		 * dateCondition.equalsIgnoreCase("equal")) { // p = cb.and(p,
-		 * cb.(root.get("created_date"), fromDate, toDate)); p = cb.and(p,
-		 * cb.like(root.get("created_date"), "%" + onDate + "%")); }
-		 * 
-		 * if (Objects.nonNull(fromDate) &&
-		 * dateCondition.equalsIgnoreCase("greaterthan")) { // p = cb.and(p,
-		 * cb.(root.get("created_date"), fromDate, toDate)); p = cb.and(p,
-		 * cb.greaterThan(root.get("created_date"), "%" + fromDate + "%")); }
-		 * 
-		 * if (Objects.nonNull(fromDate) && dateCondition.equalsIgnoreCase("lessthan"))
-		 * { // p = cb.and(p, cb.(root.get("created_date"), fromDate, toDate)); p =
-		 * cb.and(p, cb.greaterThan(root.get("created_date"), "%" + fromDate + "%")); }
-		 * 
-		 * 
-		 * datcondition=greatethan&fromDate=2021-11-08
-		 * 
-		 * datcondition=lessthan&fromDate=2021-11-08
-		 * 
-		 * 
-		 * if (sortBy != null && !sortBy.isEmpty()) {
-		 * 
-		 * if (sortBy.equalsIgnoreCase("ASC")) {
-		 * 
-		 * cq.orderBy(cb.asc(root.get("id"))); } else {
-		 * 
-		 * cq.orderBy(cb.desc(root.get("id"))); }
-		 * 
-		 * // return p; } return p; }
-		 * 
-		 * },Pageable);
-		 */
-		// return null;
-
-		// List<AdvertisesEntity> advList =
-		// advertiseRepository.findByQuery(dateCondition, onDate, fromDate, toDate,0,1);
-
-//		Pageable page = PageRequest.of(startIndex, numOfRecords);
-//		List<AdvertisesEntity> advList = advertiseRepository
-//				.findByQuery(searchText, categoryId, userId, dateCondition, onDate, fromDate, toDate, sortBy, page
-//
-//				// 0, 1
-//				).getContent();
-//
-//		//
-//		List<AdvertisesDto> advertisesDtos = getDtosListFromEntities(advList);
-
-		// ======================================= from here
 
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<AdvertisesEntity> criteriaQuery = criteriaBuilder.createQuery(AdvertisesEntity.class);
@@ -345,8 +283,8 @@ public class OlxAdvertismentServiceImpl implements OlxAdvertisementService {
 			criteriaQuery.orderBy(criteriaBuilder.desc(rootEntity.get("created_date")));
 		}
 
-		// Page<AdvertisesEntity> result = new
-		// PageImpl<AdvertisesEntity>(query.getResultList(), page, numOfRecords);
+		query.setFirstResult(startIndex * numOfRecords);
+		query.setMaxResults(5);
 
 		List<AdvertisesEntity> advertiseEntityList = query.getResultList();
 		List<AdvertisesDto> advertisesDtos = getDtosListFromEntities(advertiseEntityList);
@@ -356,24 +294,22 @@ public class OlxAdvertismentServiceImpl implements OlxAdvertisementService {
 	@Override
 	public List<AdvertisesDto> searchAdvertisementsUsingTheProvidedSearchTextWithinAllFieldsOfAnAdvertise(
 			String searchText) {
-		// List<AdvertisesEntity> advertisesEntityList =
-		// advertiseRepository.findByText(searchText);
-		// List<AdvertisesDto> advertisesDtos =
-		// getDtosListFromEntities(advertisesEntityList);
-
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<AdvertisesEntity> criteriaQuery = criteriaBuilder.createQuery(AdvertisesEntity.class);
 		Root<AdvertisesEntity> rootEntity = criteriaQuery.from(AdvertisesEntity.class);
+		List<Predicate> predicateList = new ArrayList<>();
 
 		Predicate titlePredicate = criteriaBuilder.like(rootEntity.get("title"), "%" + searchText + "%");
 		Predicate descriptionPredicate = criteriaBuilder.like(rootEntity.get("description"), "%" + searchText + "%");
 
 		Predicate postedPredicate = criteriaBuilder.equal(rootEntity.get("posted_by"), searchText); // title=searchText
 		Predicate userNamePredicate = criteriaBuilder.like(rootEntity.get("username"), "%" + searchText + "%");
-		// Predicate pricePredicate = criteriaBuilder.equal(rootEntity.get("price"),
-		// searchText);
-		// Predicate categoryPredicate =
-		// criteriaBuilder.equal(rootEntity.get("category"), searchText);
+		Predicate categoryPredicate = criteriaBuilder.equal(rootEntity.get("category"), searchText);
+
+		Predicate postedByPredicate = criteriaBuilder.equal(rootEntity.get("posted_by"), searchText);
+		Predicate predicateAnd1 = criteriaBuilder.or(titlePredicate, categoryPredicate, postedPredicate,
+				postedByPredicate, userNamePredicate, descriptionPredicate);
+		predicateList.add(predicateAnd1);
 		Predicate finalPredicate = criteriaBuilder.or(titlePredicate, postedPredicate, userNamePredicate,
 				descriptionPredicate);
 		criteriaQuery.where(finalPredicate);

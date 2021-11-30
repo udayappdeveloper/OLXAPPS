@@ -1,5 +1,6 @@
 package com.olx.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -37,6 +38,7 @@ public class UserDto {
 	public void setRoles(String roles) {
 		this.roles = roles;
 	}
+
 
 	public boolean isActive() {
 		return active;
