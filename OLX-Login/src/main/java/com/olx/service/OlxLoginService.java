@@ -16,6 +16,6 @@ public interface OlxLoginService extends UserDetailsService {
 	public UserDto returnAUser(String authToken);
 
 	public ResponseEntity<Boolean> validateToken(String authToken);
-	
+
 	public ResponseEntity<String> getUserName(String authToken);
 }

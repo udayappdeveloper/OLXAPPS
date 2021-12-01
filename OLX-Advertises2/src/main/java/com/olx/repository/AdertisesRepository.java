@@ -18,11 +18,11 @@ public interface AdertisesRepository extends JpaRepository<AdvertisesEntity, Int
 
 	public List<AdvertisesEntity> findByUsername(String userName);
 
-	@Query("SELECT a FROM AdvertisesEntity a WHERE a.title LIKE %:searchText% or a.category LIKE %:searchText% or a.description LIKE %:searchText%  or a.price LIKE %:searchText% or a.posted_by LIKE %:searchText%"
-			+ " or a.created_date LIKE %:searchText% or a.modified_date LIKE %:searchText%")
+	@Query("SELECT a FROM AdvertisesEntity a WHERE a.title LIKE %:searchText% or a.category LIKE %:searchText% or a.description LIKE %:searchText%  or a.price LIKE %:searchText% or a.postedBy LIKE %:searchText%"
+			+ " or a.createdDate LIKE %:searchText% or a.modifiedDate LIKE %:searchText%")
 	public List<AdvertisesEntity> findByText(@Param("searchText") String searchText);
 
-	@Query("SELECT a FROM AdvertisesEntity a WHERE  (:searchText IS NULL OR  a.title LIKE %:searchText% ) AND (:categoryId IS NULL OR category=:categoryId ) AND (:userId IS NULL OR id=:userId ) AND (:dateCondition='equals' AND  a.created_date=:onDate) OR (:dateCondition='greaterthan' AND  a.created_date>:fromDate) OR (:dateCondition='lessthan' AND  a.created_date<:toDate) OR (:dateCondition='between' AND  a.created_date>:fromDate AND a.created_date<=:toDate) "
+	@Query("SELECT a FROM AdvertisesEntity a WHERE  (:searchText IS NULL OR  a.title LIKE %:searchText% ) AND (:categoryId IS NULL OR category=:categoryId ) AND (:userId IS NULL OR id=:userId ) AND (:dateCondition='equals' AND  a.createdDate=:onDate) OR (:dateCondition='greaterthan' AND  a.createdDate>:fromDate) OR (:dateCondition='lessthan' AND  a.createdDate<:toDate) OR (:dateCondition='between' AND  a.createdDate>:fromDate AND a.createdDate<=:toDate) "
 			+ " ORDER BY  CASE WHEN  :sortBy  IS NULL THEN  id  ELSE -id  END ")
 	public Page<AdvertisesEntity> findByQuery(@Param("searchText") String searchText,
 			@Param("categoryId") Integer categoryId, @Param("userId") Integer userId,

@@ -3,7 +3,6 @@ package com.olx.service;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -17,10 +16,6 @@ import javax.persistence.criteria.Root;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.olx.dto.AdvStatus;
@@ -72,8 +67,8 @@ public class OlxAdvertismentServiceImpl implements OlxAdvertisementService {
 			advrt.setUsername(userName);
 			advrt.setCategory(catName);
 			advrt.setStatus(status);
-			advrt.setCreated_date(LocalDate.now());
-			advrt.setModified_date(LocalDate.now());
+			advrt.setCreatedDate(LocalDate.now());
+			advrt.setModifiedDate(LocalDate.now());
 			advrt.setActive(1);
 
 			AdvertisesEntity advEntity = utility.convertAdvertiseDtoToEntity(advrt);
@@ -101,7 +96,7 @@ public class OlxAdvertismentServiceImpl implements OlxAdvertisementService {
 			advrt.setUsername(userName);
 			advrt.setCategory(catName);
 			advrt.setStatus(status);
-			advrt.setModified_date(LocalDate.now());
+			advrt.setModifiedDate(LocalDate.now());
 			advrt.setActive(1);
 			advrt.setId(advertisementId);
 
@@ -225,17 +220,17 @@ public class OlxAdvertismentServiceImpl implements OlxAdvertisementService {
 		Predicate titlePredicate = criteriaBuilder.like(rootEntity.get("title"), "%" + searchText + "%");
 		Predicate descriptionPredicate = criteriaBuilder.like(rootEntity.get("description"), "%" + searchText + "%");
 
-		Predicate postedPredicate = criteriaBuilder.equal(rootEntity.get("posted_by"), searchText); // title=searchText
+		Predicate postedPredicate = criteriaBuilder.equal(rootEntity.get("postedBy"), searchText); // title=searchText
 		Predicate userNamePredicate = criteriaBuilder.like(rootEntity.get("username"), "%" + searchText + "%");
 		Predicate categoryPredicate = criteriaBuilder.equal(rootEntity.get("category"), categoryId);
 
-		Predicate postedByPredicate = criteriaBuilder.equal(rootEntity.get("posted_by"), postedBy);
+		Predicate postedByPredicate = criteriaBuilder.equal(rootEntity.get("postedBy"), postedBy);
 		Predicate predicateAnd1 = criteriaBuilder.or(titlePredicate, categoryPredicate, postedPredicate,
 				postedByPredicate, userNamePredicate, descriptionPredicate);
 		predicateList.add(predicateAnd1);
 
 		if (dateCondition != null && dateCondition.equalsIgnoreCase("equals")) {
-			Predicate equalsPredicate = criteriaBuilder.equal(rootEntity.get("created_date"), onDate);
+			Predicate equalsPredicate = criteriaBuilder.equal(rootEntity.get("createdDate"), onDate);
 			Predicate predicateAnd2 = criteriaBuilder.and(equalsPredicate);
 			predicateList.add(predicateAnd2);
 
@@ -243,28 +238,28 @@ public class OlxAdvertismentServiceImpl implements OlxAdvertisementService {
 
 		if (dateCondition != null && dateCondition.equalsIgnoreCase("greaterthan")) {
 
-			Predicate greaterthanPredicate = criteriaBuilder.greaterThan(rootEntity.get("created_date"), fromDate);
+			Predicate greaterthanPredicate = criteriaBuilder.greaterThan(rootEntity.get("createdDate"), fromDate);
 			Predicate predicateAnd3 = criteriaBuilder.and(greaterthanPredicate);
 			predicateList.add(predicateAnd3);
 		}
 
 		if (dateCondition != null && dateCondition.equalsIgnoreCase("lessthan")) {
 
-			Predicate lessThanPredicate = criteriaBuilder.lessThan(rootEntity.get("created_date"), fromDate); //
+			Predicate lessThanPredicate = criteriaBuilder.lessThan(rootEntity.get("createdDate"), fromDate); //
 			Predicate predicateAnd4 = criteriaBuilder.and(lessThanPredicate);
 			predicateList.add(predicateAnd4);
 		}
 
 		if (dateCondition != null && dateCondition.equalsIgnoreCase("between")) {
 
-			Predicate greaterThanPredicate = criteriaBuilder.between(rootEntity.get("created_date"), fromDate, toDate); //
+			Predicate greaterThanPredicate = criteriaBuilder.between(rootEntity.get("createdDate"), fromDate, toDate); //
 			Predicate predicateAnd5 = criteriaBuilder.and(greaterThanPredicate);
 			predicateList.add(predicateAnd5);
 		}
 
 		if (dateCondition != null && dateCondition.equalsIgnoreCase("between")) {
 
-			Predicate greaterThanPredicate = criteriaBuilder.between(rootEntity.get("created_date"), fromDate, toDate); //
+			Predicate greaterThanPredicate = criteriaBuilder.between(rootEntity.get("createdDate"), fromDate, toDate); //
 			Predicate predicateAnd5 = criteriaBuilder.and(greaterThanPredicate);
 			predicateList.add(predicateAnd5);
 		}
@@ -273,14 +268,13 @@ public class OlxAdvertismentServiceImpl implements OlxAdvertisementService {
 		criteriaQuery.where(predicateList.toArray(arr));
 
 		// Pageable page = PageRequest.of(startIndex, numOfRecords);
-		
+
 		if (sortBy != null && sortBy.equalsIgnoreCase("ASC")) {
-			criteriaQuery.orderBy(criteriaBuilder.asc(rootEntity.get("created_date")));
+			criteriaQuery.orderBy(criteriaBuilder.asc(rootEntity.get("createdDate")));
 		}
 		if (sortBy != null && sortBy.equalsIgnoreCase("DESC")) {
-			criteriaQuery.orderBy(criteriaBuilder.desc(rootEntity.get("created_date")));
+			criteriaQuery.orderBy(criteriaBuilder.desc(rootEntity.get("createdDate")));
 		}
-		
 
 		TypedQuery<AdvertisesEntity> query = entityManager.createQuery(criteriaQuery);
 		query.setFirstResult(startIndex * numOfRecords);
@@ -302,13 +296,14 @@ public class OlxAdvertismentServiceImpl implements OlxAdvertisementService {
 		Predicate titlePredicate = criteriaBuilder.like(rootEntity.get("title"), "%" + searchText + "%");
 		Predicate descriptionPredicate = criteriaBuilder.like(rootEntity.get("description"), "%" + searchText + "%");
 
-		Predicate postedPredicate = criteriaBuilder.equal(rootEntity.get("posted_by"), "%" + searchText + "%"); // title=searchText
+		Predicate postedPredicate = criteriaBuilder.equal(rootEntity.get("postedBy"), "%" + searchText + "%"); // title=searchText
 		Predicate userNamePredicate = criteriaBuilder.like(rootEntity.get("username"), "%" + searchText + "%");
-		//Predicate categoryPredicate = criteriaBuilder.equal(rootEntity.get("category"), searchText);
+		// Predicate categoryPredicate =
+		// criteriaBuilder.equal(rootEntity.get("category"), searchText);
 
-		Predicate postedByPredicate = criteriaBuilder.equal(rootEntity.get("posted_by"), searchText);
-		Predicate predicateAnd1 = criteriaBuilder.or(titlePredicate,  postedPredicate,
-				postedByPredicate, userNamePredicate, descriptionPredicate);
+		Predicate postedByPredicate = criteriaBuilder.equal(rootEntity.get("postedBy"), searchText);
+		Predicate predicateAnd1 = criteriaBuilder.or(titlePredicate, postedPredicate, postedByPredicate,
+				userNamePredicate, descriptionPredicate);
 		predicateList.add(predicateAnd1);
 		Predicate finalPredicate = criteriaBuilder.or(titlePredicate, postedPredicate, userNamePredicate,
 				descriptionPredicate);
@@ -327,15 +322,15 @@ public class OlxAdvertismentServiceImpl implements OlxAdvertisementService {
 	private AdvertisesDto convertToDto(AdvertisesEntity advertisesEntity) {
 		AdvertisesDto advDto = modelMapper.map(advertisesEntity, AdvertisesDto.class);
 		try {
-			advDto.setModified_date(
-					advertisesEntity.getModified_date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+			advDto.setModifiedDate(
+					advertisesEntity.getModifiedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 
 		} catch (Exception e) {
 
 		}
 		try {
-			advDto.setCreated_date(
-					advertisesEntity.getCreated_date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+			advDto.setCreatedDate(
+					advertisesEntity.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -351,8 +346,8 @@ public class OlxAdvertismentServiceImpl implements OlxAdvertisementService {
 
 	private AdvertisesEntity convertToEntity(AdvertisesDto advertisesDto) {
 		AdvertisesEntity advertisesEntity = modelMapper.map(advertisesDto, AdvertisesEntity.class);
-		advertisesEntity.setModified_date(dateCoverter.convertToDatabaseColumn(advertisesDto.getModified_date()));
-		advertisesEntity.setCreated_date(dateCoverter.convertToDatabaseColumn(advertisesDto.getCreated_date()));
+		advertisesEntity.setModifiedDate(dateCoverter.convertToDatabaseColumn(advertisesDto.getModifiedate()));
+		advertisesEntity.setCreatedDate(dateCoverter.convertToDatabaseColumn(advertisesDto.getCreatedDate()));
 		return advertisesEntity;
 	}
 
@@ -373,15 +368,15 @@ public class OlxAdvertismentServiceImpl implements OlxAdvertisementService {
 			advDto.setStatus(status);
 			advDto.setCategory(catName);
 			try {
-				advDto.setModified_date(
-						advEntity.getModified_date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+				advDto.setModifiedDate(
+						advEntity.getModifiedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 
 			} catch (Exception e) {
 
 			}
 			try {
-				advDto.setCreated_date(
-						advEntity.getCreated_date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+				advDto.setCreatedDate(
+						advEntity.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 
 			} catch (Exception e) {
 				e.printStackTrace();

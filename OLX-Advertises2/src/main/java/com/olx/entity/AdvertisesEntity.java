@@ -23,11 +23,13 @@ public class AdvertisesEntity {
 	private double price;
 	private String description;
 	private Blob photo;
-	private Date created_date;
-	private Date modified_date;
-	private String posted_by;
+	@Column(name = "created_date")
+	private Date createdDate;
+	@Column(name = "modified_date")
+	private Date modifiedDate;
+	@Column(name = "posted_by")
+	private String postedBy;
 	private String username;
-
 	@Column(name = "active")
 	private boolean active;
 
@@ -95,28 +97,28 @@ public class AdvertisesEntity {
 		this.photo = photo;
 	}
 
-	public Date getCreated_date() {
-		return created_date;
+	public Date getCreatedDate() {
+		return createdDate;
 	}
 
-	public void setCreated_date(Date created_date) {
-		this.created_date = created_date;
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
 	}
 
-	public Date getModified_date() {
-		return modified_date;
+	public Date getModifiedDate() {
+		return modifiedDate;
 	}
 
-	public void setModified_date(Date modified_date) {
-		this.modified_date = modified_date;
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
 	}
 
-	public String getPosted_by() {
-		return posted_by;
+	public String getPostedBy() {
+		return postedBy;
 	}
 
-	public void setPosted_by(String posted_by) {
-		this.posted_by = posted_by;
+	public void setPostedBy(String postedBy) {
+		this.postedBy = postedBy;
 	}
 
 	public String getUsername() {

@@ -38,7 +38,7 @@ public class AdvertisesDto {
 
 	private String status;
 
-	@JsonIgnore
+	//@JsonIgnore
 	public int getCategoryId() {
 		return categoryId;
 	}
@@ -69,13 +69,13 @@ public class AdvertisesDto {
 	private Blob photo;
 
 	@ApiModelProperty("Created Date")
-	private LocalDate created_date;
+	private LocalDate createdDate;
 	
 	@ApiModelProperty("Modified Date")
-	private LocalDate modified_date;
+	private LocalDate modifiedDate;
 	private int active;
 
-	private String posted_by;
+	private String postedBy;
 	@ApiModelProperty("Username")
 	private String username;
 
@@ -127,28 +127,28 @@ public class AdvertisesDto {
 		this.photo = photo;
 	}
 
-	public LocalDate getCreated_date() {
-		return created_date;
+	public LocalDate getCreatedDate() {
+		return createdDate;
 	}
 
-	public void setCreated_date(LocalDate created_date) {
-		this.created_date = created_date;
+	public void setCreatedDate(LocalDate createdDate) {
+		this.createdDate = createdDate;
 	}
 
-	public LocalDate getModified_date() {
-		return modified_date;
+	public LocalDate getModifiedate() {
+		return modifiedDate;
 	}
 
-	public void setModified_date(LocalDate modified_date) {
-		this.modified_date = modified_date;
+	public void setModifiedDate(LocalDate modifiedDate) {
+		this.modifiedDate = modifiedDate;
 	}
 
-	public String getPosted_by() {
-		return posted_by;
+	public String getPostedBy() {
+		return postedBy;
 	}
 
-	public void setPosted_by(String posted_by) {
-		this.posted_by = posted_by;
+	public void setPostedBy(String postedBy) {
+		this.postedBy = postedBy;
 	}
 
 	public String getUsername() {

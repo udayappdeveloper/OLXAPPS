@@ -20,7 +20,7 @@ public class ServiceNotAvailableException extends RuntimeException {
 
 	@Override
 	public String toString() {
-		return "Invalid Advertise Id " + name;
+		return "Master Data Service Not Available.Service might be down. Please wait for some time or Retry  after some time " + name;
 	}
 
 }

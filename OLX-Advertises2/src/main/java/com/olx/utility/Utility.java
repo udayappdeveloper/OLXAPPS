@@ -54,11 +54,11 @@ public class Utility {
 			mapper.map(source -> source.getCategoryId(), AdvertisesEntity::setCategory);
 			mapper.map(source -> source.getStatusId(), AdvertisesEntity::setStatus);
 
-			mapper.map(source -> dateConverter.convertToDatabaseColumn(source.getCreated_date()),
-					AdvertisesEntity::setCreated_date);
-			mapper.map(source -> dateConverter.convertToDatabaseColumn(source.getModified_date()),
-					AdvertisesEntity::setModified_date);
-			mapper.map(source -> source.getUsername(), AdvertisesEntity::setPosted_by);
+			mapper.map(source -> dateConverter.convertToDatabaseColumn(source.getCreatedDate()),
+					AdvertisesEntity::setCreatedDate);
+			mapper.map(source -> dateConverter.convertToDatabaseColumn(source.getModifiedate()),
+					AdvertisesEntity::setModifiedDate);
+			mapper.map(source -> source.getUsername(), AdvertisesEntity::setPostedBy);
 
 		});
 		AdvertisesEntity advertisesEntity = this.modelMapper.map(dto, AdvertisesEntity.class);

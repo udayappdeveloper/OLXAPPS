@@ -51,5 +51,5 @@ public class OlxLoginApplication {
 	public ModelMapper getModelMapper() {
 		return new ModelMapper();
 	}
-// added comments 
+
 }
