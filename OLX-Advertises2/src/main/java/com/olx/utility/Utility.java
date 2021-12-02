@@ -22,9 +22,7 @@ public class Utility {
 
 	public String getCategoryNameFromMap(List<Category> list, int catId) {
 		String categoryName = "";
-		int s = list.size();
 		for (Category cat : list) {
-
 			if (cat.getId() == catId) {
 				categoryName = cat.getCatgory();
 				break;
@@ -54,10 +52,10 @@ public class Utility {
 			mapper.map(source -> source.getCategoryId(), AdvertisesEntity::setCategory);
 			mapper.map(source -> source.getStatusId(), AdvertisesEntity::setStatus);
 
-			mapper.map(source -> dateConverter.convertToDatabaseColumn(source.getCreatedDate()),
-					AdvertisesEntity::setCreatedDate);
-			mapper.map(source -> dateConverter.convertToDatabaseColumn(source.getModifiedate()),
-					AdvertisesEntity::setModifiedDate);
+//			mapper.map(source -> dateConverter.convertToDatabaseColumn(source.getCreatedDate()),
+//					AdvertisesEntity::setCreatedDate);
+//			mapper.map(source -> dateConverter.convertToDatabaseColumn(source.getModifiedate()),
+//					AdvertisesEntity::setModifiedDate);
 			mapper.map(source -> source.getUsername(), AdvertisesEntity::setPostedBy);
 
 		});

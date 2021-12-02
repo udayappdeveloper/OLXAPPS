@@ -1,7 +1,7 @@
 package com.olx.entity;
 
 import java.sql.Blob;
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,20 +24,20 @@ public class AdvertisesEntity {
 	private String description;
 	private Blob photo;
 	@Column(name = "created_date")
-	private Date createdDate;
+	private LocalDate createdDate;
 	@Column(name = "modified_date")
-	private Date modifiedDate;
+	private LocalDate modifiedDate;
 	@Column(name = "posted_by")
 	private String postedBy;
 	private String username;
 	@Column(name = "active")
-	private boolean active;
+	private int active;
 
-	public boolean isActive() {
+	public int isActive() {
 		return active;
 	}
 
-	public void setActive(boolean active) {
+	public void setActive(int active) {
 		this.active = active;
 	}
 
@@ -97,19 +97,19 @@ public class AdvertisesEntity {
 		this.photo = photo;
 	}
 
-	public Date getCreatedDate() {
+	public LocalDate getCreatedDate() {
 		return createdDate;
 	}
 
-	public void setCreatedDate(Date createdDate) {
+	public void setCreatedDate(LocalDate createdDate) {
 		this.createdDate = createdDate;
 	}
 
-	public Date getModifiedDate() {
+	public LocalDate getModifiedDate() {
 		return modifiedDate;
 	}
 
-	public void setModifiedDate(Date modifiedDate) {
+	public void setModifiedDate(LocalDate modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
 

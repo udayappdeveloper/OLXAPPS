@@ -1,9 +1,7 @@
 package com.olx.service;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +26,7 @@ import com.olx.exception.InvalidAuthTokenException;
 import com.olx.repository.AdertisesRepository;
 import com.olx.utility.LocalDateAttributeConverter;
 import com.olx.utility.Utility;
+import com.olx.utility.Constants;
 
 @Service
 public class OlxAdvertismentServiceImpl implements OlxAdvertisementService {
@@ -196,7 +195,20 @@ public class OlxAdvertismentServiceImpl implements OlxAdvertisementService {
 			Optional<AdvertisesEntity> optionalEntity = advertiseRepository.findById(advertisementId);
 			if (optionalEntity.isPresent()) {
 				AdvertisesEntity advEntity = optionalEntity.get();
-				return convertToDto(advEntity);
+				List<Category> catList = masterDataDeligate.getAllCategories();
+				List<AdvStatus> advStatusList = masterDataDeligate.getAllAdvertisesStatus();
+				int catId = advEntity.getCategory();
+				String catName = utility.getCategoryNameFromMap(catList, catId);
+
+				int statusId = advEntity.getStatus();
+				String status = utility.getAdvertiseStatusFromMap(advStatusList, statusId);
+
+				AdvertisesDto dto = convertToDto(advEntity);
+				dto.setCategoryId(statusId);
+				dto.setCategory(catName);
+				dto.setStatus(status);
+
+				return dto;
 			} else {
 				throw new InvalidAdvertiseIdException(advertisementId + "");
 			}
@@ -209,66 +221,61 @@ public class OlxAdvertismentServiceImpl implements OlxAdvertisementService {
 
 	@Override
 	public List<AdvertisesDto> searchAdvertisementsBasedUpOnGivenFilterCriteria(String searchText, Integer categoryId,
-			String postedBy, String dateCondition, Date onDate, Date fromDate, Date toDate, String sortBy,
-			Integer startIndex, Integer numOfRecords) {
+			String postedBy, String dateCondition, LocalDate onDate, LocalDate fromDate, LocalDate toDate,
+			String sortBy, Integer startIndex, Integer numOfRecords) {
 
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<AdvertisesEntity> criteriaQuery = criteriaBuilder.createQuery(AdvertisesEntity.class);
 		Root<AdvertisesEntity> rootEntity = criteriaQuery.from(AdvertisesEntity.class);
+		// criteriaQuery.select(rootEntity);
 		List<Predicate> predicateList = new ArrayList<>();
-
-		Predicate titlePredicate = criteriaBuilder.like(rootEntity.get("title"), "%" + searchText + "%");
-		Predicate descriptionPredicate = criteriaBuilder.like(rootEntity.get("description"), "%" + searchText + "%");
-
-		Predicate postedPredicate = criteriaBuilder.equal(rootEntity.get("postedBy"), searchText); // title=searchText
-		Predicate userNamePredicate = criteriaBuilder.like(rootEntity.get("username"), "%" + searchText + "%");
-		Predicate categoryPredicate = criteriaBuilder.equal(rootEntity.get("category"), categoryId);
-
-		Predicate postedByPredicate = criteriaBuilder.equal(rootEntity.get("postedBy"), postedBy);
-		Predicate predicateAnd1 = criteriaBuilder.or(titlePredicate, categoryPredicate, postedPredicate,
-				postedByPredicate, userNamePredicate, descriptionPredicate);
-		predicateList.add(predicateAnd1);
-
-		if (dateCondition != null && dateCondition.equalsIgnoreCase("equals")) {
-			Predicate equalsPredicate = criteriaBuilder.equal(rootEntity.get("createdDate"), onDate);
-			Predicate predicateAnd2 = criteriaBuilder.and(equalsPredicate);
-			predicateList.add(predicateAnd2);
-
+		if (searchText != null && !searchText.isEmpty()) {
+			Predicate titlePredicate = criteriaBuilder.like(rootEntity.get("title"), "%" + searchText + "%");
+			predicateList.add(titlePredicate);
+		}
+		if (postedBy != null && postedBy.isEmpty()) {
+			Predicate postedByPredicate = criteriaBuilder.equal(rootEntity.get("postedBy"), postedBy);
+			predicateList.add(postedByPredicate);
 		}
 
-		if (dateCondition != null && dateCondition.equalsIgnoreCase("greaterthan")) {
-
-			Predicate greaterthanPredicate = criteriaBuilder.greaterThan(rootEntity.get("createdDate"), fromDate);
-			Predicate predicateAnd3 = criteriaBuilder.and(greaterthanPredicate);
-			predicateList.add(predicateAnd3);
+		if (categoryId != null) {
+			Predicate categoryPredicate = criteriaBuilder.equal(rootEntity.get("category"), categoryId);
+			predicateList.add(categoryPredicate);
 		}
 
-		if (dateCondition != null && dateCondition.equalsIgnoreCase("lessthan")) {
+		// Predicate dateConditionPredicate = null;
+		if (dateCondition != null) {
+			switch (dateCondition) {
+			case Constants.EQUAL:
+				Predicate dateConditionPredicate1 = criteriaBuilder.equal(rootEntity.get("createdDate"), onDate);
+				predicateList.add(dateConditionPredicate1);
+				break;
 
-			Predicate lessThanPredicate = criteriaBuilder.lessThan(rootEntity.get("createdDate"), fromDate); //
-			Predicate predicateAnd4 = criteriaBuilder.and(lessThanPredicate);
-			predicateList.add(predicateAnd4);
-		}
+			case Constants.GREATERTHAN:
+				Predicate dateConditionPredicate2 = criteriaBuilder.greaterThan(rootEntity.get("createdDate"),
+						fromDate);
+				predicateList.add(dateConditionPredicate2);
+				break;
 
-		if (dateCondition != null && dateCondition.equalsIgnoreCase("between")) {
+			case Constants.LESSTHAN:
+				Predicate dateConditionPredicate3 = criteriaBuilder.lessThan(rootEntity.get("createdDate"), fromDate); //
+				predicateList.add(dateConditionPredicate3);
+				break;
 
-			Predicate greaterThanPredicate = criteriaBuilder.between(rootEntity.get("createdDate"), fromDate, toDate); //
-			Predicate predicateAnd5 = criteriaBuilder.and(greaterThanPredicate);
-			predicateList.add(predicateAnd5);
-		}
+			case Constants.BETWEEN:
+				Predicate dateConditionPredicate4 = criteriaBuilder.between(rootEntity.get("createdDate"), fromDate,
+						toDate); //
+				predicateList.add(dateConditionPredicate4);
+				break;
 
-		if (dateCondition != null && dateCondition.equalsIgnoreCase("between")) {
+			default:
+				break;
+			}
 
-			Predicate greaterThanPredicate = criteriaBuilder.between(rootEntity.get("createdDate"), fromDate, toDate); //
-			Predicate predicateAnd5 = criteriaBuilder.and(greaterThanPredicate);
-			predicateList.add(predicateAnd5);
 		}
 
 		Predicate[] arr = new Predicate[predicateList.size()];
 		criteriaQuery.where(predicateList.toArray(arr));
-
-		// Pageable page = PageRequest.of(startIndex, numOfRecords);
-
 		if (sortBy != null && sortBy.equalsIgnoreCase("ASC")) {
 			criteriaQuery.orderBy(criteriaBuilder.asc(rootEntity.get("createdDate")));
 		}
@@ -277,9 +284,11 @@ public class OlxAdvertismentServiceImpl implements OlxAdvertisementService {
 		}
 
 		TypedQuery<AdvertisesEntity> query = entityManager.createQuery(criteriaQuery);
-		query.setFirstResult(startIndex * numOfRecords);
-		query.setMaxResults(5);
 
+		if (startIndex != null && numOfRecords != null) {
+			query.setFirstResult(startIndex);
+			query.setMaxResults(numOfRecords);
+		}
 		List<AdvertisesEntity> advertiseEntityList = query.getResultList();
 		List<AdvertisesDto> advertisesDtos = getDtosListFromEntities(advertiseEntityList);
 		return advertisesDtos;
@@ -321,66 +330,40 @@ public class OlxAdvertismentServiceImpl implements OlxAdvertisementService {
 
 	private AdvertisesDto convertToDto(AdvertisesEntity advertisesEntity) {
 		AdvertisesDto advDto = modelMapper.map(advertisesEntity, AdvertisesDto.class);
-		try {
-			advDto.setModifiedDate(
-					advertisesEntity.getModifiedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-
-		} catch (Exception e) {
-
-		}
-		try {
-			advDto.setCreatedDate(
-					advertisesEntity.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		try {
+//			advDto.setModifiedDate(
+//					advertisesEntity.getModifiedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+//
+//		} catch (Exception e) {
+//
+//		}
+//		try {
+//			advDto.setCreatedDate(
+//					advertisesEntity.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 
 		return advDto;
 	}
 
-	/*
-	 * 
-	 * DTO to Entity Converter
-	 */
-
-	private AdvertisesEntity convertToEntity(AdvertisesDto advertisesDto) {
-		AdvertisesEntity advertisesEntity = modelMapper.map(advertisesDto, AdvertisesEntity.class);
-		advertisesEntity.setModifiedDate(dateCoverter.convertToDatabaseColumn(advertisesDto.getModifiedate()));
-		advertisesEntity.setCreatedDate(dateCoverter.convertToDatabaseColumn(advertisesDto.getCreatedDate()));
-		return advertisesEntity;
-	}
-
 	private List<AdvertisesDto> getDtosListFromEntities(List<AdvertisesEntity> advertisesEntitiesList) {
+
 		List<AdvertisesDto> adverDtosList = new ArrayList<AdvertisesDto>();
 
 		List<Category> catList = masterDataDeligate.getAllCategories();
 		List<AdvStatus> advStatusList = masterDataDeligate.getAllAdvertisesStatus();
 		for (AdvertisesEntity advEntity : advertisesEntitiesList) {
-
 			int catId = advEntity.getCategory();
 			String catName = utility.getCategoryNameFromMap(catList, catId);
-
 			int statusId = advEntity.getStatus();
 			String status = utility.getAdvertiseStatusFromMap(advStatusList, statusId);
 			AdvertisesDto advDto = modelMapper.map(advEntity, AdvertisesDto.class);
-
+			advDto.setCategoryId(catId);
+			advDto.setActive(advEntity.getStatus());
 			advDto.setStatus(status);
 			advDto.setCategory(catName);
-			try {
-				advDto.setModifiedDate(
-						advEntity.getModifiedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-
-			} catch (Exception e) {
-
-			}
-			try {
-				advDto.setCreatedDate(
-						advEntity.getCreatedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 			adverDtosList.add(advDto);
 		}
 		return adverDtosList;
